@@ -1,4 +1,3 @@
-import userEvent from "@testing-library/user-event";
 import { sentiments } from "../../helpers/utils";
 
 const Tweet = ({ tweet }) => {
@@ -12,8 +11,8 @@ const Tweet = ({ tweet }) => {
           <img
             className="w-10 h-10 rounded-full"
             src={
-              tweet && tweet.user && tweet.user.profileImageURLHttps
-                ? tweet.user.profileImageURLHttps
+              tweet && tweet.user && tweet.user.profileImageUrlHttps
+                ? tweet.user.profileImageUrlHttps
                 : "https://picsum.photos/200"
             }
             alt=""
