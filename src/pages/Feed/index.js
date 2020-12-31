@@ -7,7 +7,7 @@ const Feed = () => {
   const [tweets, setTweets] = React.useState([]);
 
   React.useEffect(() => {
-    fetch("http://localhost:3002/api/tweets")
+    fetch(`${process.env.REACT_APP_API_KEY}/tweets`)
       .then((response) => response.json())
       .then((response) => {
         setTweets(response);
@@ -23,7 +23,6 @@ const Feed = () => {
     });
   }, []);
 
-  console.log(tweets);
   return (
     <div className="flex">
       <div className="w-1/3 p-4 border-r border-gray-600">
