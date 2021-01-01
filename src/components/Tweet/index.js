@@ -30,7 +30,7 @@ const Tweet = ({ tweet }) => {
         </div>
       </div>
       <div className="p-4">
-        <p className="text-base text-justify">{tweet.fullText}</p>
+        <p className="text-base text-justify text-white">{tweet.fullText}</p>
       </div>
     </div>
   );

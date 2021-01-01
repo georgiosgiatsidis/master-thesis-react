@@ -1,5 +1,8 @@
 import React, { useEffect } from "react";
+import moment from "moment";
 import { sentiments } from "../../helpers/utils";
+import useInterval from "../../hooks/useInterval";
+import useTerms from "../../hooks/useTerms";
 
 let map;
 
@@ -80,13 +83,13 @@ const Map = () => {
   };
 
   const loadSentimentData = (option) => {
-    fetch(`${process.env.REACT_APP_API_KEY}/other`)
+    fetch(`${process.env.REACT_APP_API_URL}/countries/tweets`)
       .then((res) => res.json())
       .then((data) => {
         data.forEach((row) => {
           const feature = map.data.getFeatureById(row.countryCode);
           if (feature) {
-            feature.setProperty("sentiment", row.sentiment);
+            feature.setProperty("sentiment", row.mainSentiment);
           }
         });
       });
@@ -103,14 +106,41 @@ const Map = () => {
     loadSentimentData(e.target.value);
   };
 
+  useInterval(() => {
+    loadSentimentData();
+  }, 60 * 1000);
+
+  const options = useTerms();
+
   return (
     <React.Fragment>
-      <select onChange={handleChange}>
-        <option value="">All</option>
-        <option value="BTC">Bitcoin</option>
-        <option value="ETH">Ethereum</option>
-      </select>
-      <div style={{ height: "90vh" }} id="map-container"></div>;
+      <div>
+        <select onChange={handleChange}>
+          <option value="">All</option>
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+        <input
+          type="date"
+          onChange={() => {}}
+          value={moment().format("YYYY-MM-DD")}
+        />
+      </div>
+      <div className="flex">
+        {Object.keys(sentiments).map((key) => (
+          <div
+            key={key}
+            className="p-1 my-1 mr-2 text-xs text-white"
+            style={{ background: sentiments[key].background }}
+          >
+            {sentiments[key].label}
+          </div>
+        ))}
+      </div>
+      <div style={{ height: "90vh" }} id="map-container"></div>
     </React.Fragment>
   );
 };

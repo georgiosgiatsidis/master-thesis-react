@@ -1,23 +1,23 @@
 export const sentiments = {
   VERY_POSITIVE: {
-    background: "#2166AC"
-    // background: "#3A70A6",
+    label: "Very Positive",
+    background: "#2166AC",
   },
   POSITIVE: {
+    label: "Positive",
     background: "#4694bb",
-    // background: "#92C5DE"
   },
   NEUTRAL: {
+    label: "Neutral",
     background: "#738694",
-    // background: "#999999",
   },
   NEGATIVE: {
-    // background: "#F4A582",
+    label: "Negative",
     background: "#e05a5a",
   },
   VERY_NEGATIVE: {
+    label: "Very Negative",
     background: "#B2182B",
-    // background: "#b22222",
   },
-  NOT_UNDERSTOOD: { background: "#666" },
+  NOT_UNDERSTOOD: { label: "Not Understood", background: "#666" },
 };
