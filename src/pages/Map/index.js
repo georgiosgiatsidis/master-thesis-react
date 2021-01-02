@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Datetime from "react-datetime";
+import DatePicker from "../../components/DatePicker";
 import GoogleMaps from "../../components/GoogleMaps";
 import useTerms from "../../hooks/useTerms";
 import { sentiments } from "../../helpers/utils";
@@ -15,8 +15,6 @@ const Map = () => {
   const handleDateChange = (key) => (date) => {
     setDateRange((prevState) => ({ ...prevState, [key]: date }));
   };
-
-  console.log(dateRange);
 
   useEffect(() => {
     let createdAt;
@@ -37,8 +35,8 @@ const Map = () => {
 
   return (
     <React.Fragment>
-      <div>
-        <select onChange={handleTermChange}>
+      <div className="flex m-4">
+        <select className="px-3 py-3 text-gray-700 rounded shadow outline-none" onChange={handleTermChange}>
           <option value="">All</option>
           {options.map((option) => (
             <option key={option.value} value={option.value}>
@@ -46,10 +44,14 @@ const Map = () => {
             </option>
           ))}
         </select>
-        <Datetime onChange={handleDateChange("from")} timeFormat={false} />
-        <Datetime onChange={handleDateChange("to")} timeFormat={false} />
+        <div className="ml-3">
+          <DatePicker onChange={handleDateChange("from")} />
+        </div>
+        <div className="ml-3">
+          <DatePicker onChange={handleDateChange("to")} />
+        </div>
       </div>
-      <div className="flex">
+      <div className="flex m-4">
         {Object.keys(sentiments).map((key) => (
           <div
             key={key}
