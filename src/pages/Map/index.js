@@ -1,121 +1,44 @@
-import React, { useEffect } from "react";
-import moment from "moment";
-import { sentiments } from "../../helpers/utils";
-import useInterval from "../../hooks/useInterval";
+import React, { useEffect, useState } from "react";
+import Datetime from "react-datetime";
+import GoogleMaps from "../../components/GoogleMaps";
 import useTerms from "../../hooks/useTerms";
-
-let map;
+import { sentiments } from "../../helpers/utils";
 
 const Map = () => {
+  const [filters, setFilters] = useState({});
+  const [dateRange, setDateRange] = useState({ from: null, to: null });
+
+  const handleTermChange = (e) => {
+    setFilters((prevState) => ({ ...prevState, term: e.target.value }));
+  };
+
+  const handleDateChange = (key) => (date) => {
+    setDateRange((prevState) => ({ ...prevState, [key]: date }));
+  };
+
+  console.log(dateRange);
+
   useEffect(() => {
-    if (!window.google) {
-      const script = document.createElement(`script`);
-      script.type = `text/javascript`;
-      script.src =
-        `https://maps.google.com/maps/api/js?key=` +
-        process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
-      const headScript = document.getElementsByTagName(`script`)[0];
-      headScript.parentNode.insertBefore(script, headScript);
-      script.addEventListener(`load`, onLoad);
-      return () => script.removeEventListener(`load`, onLoad);
-    } else onLoad();
-  });
+    let createdAt;
 
-  const onLoad = () => {
-    map = new window.google.maps.Map(document.getElementById("map-container"), {
-      zoom: 3,
-      center: { lat: 30, lng: 31 },
-      zoomControl: true,
-      zoomControlOptions: {
-        position: window.google.maps.ControlPosition.RIGHT_CENTER,
-      },
-      streetViewControl: false,
-      mapTypeControl: false,
-      styles: [
-        {
-          stylers: [{ visibility: "off" }],
-        },
-        {
-          featureType: "landscape",
-          elementType: "geometry",
-          stylers: [{ visibility: "on" }, { color: "#242f3e" }],
-        },
-        {
-          featureType: "water",
-          elementType: "geometry",
-          stylers: [{ visibility: "on" }, { color: "#17263c" }],
-        },
-      ],
-    });
+    if (dateRange.from && dateRange.to) {
+      const from = dateRange.from.toISOString();
+      const to = dateRange.to.toISOString();
+      createdAt = `between:${from},${to}`;
+    }
 
-    map.data.setStyle((feature) => {
-      const sentiment = feature.getProperty("sentiment");
-
-      let outlineWeight = 0.5;
-
-      if (feature.getProperty("state") === "hover") {
-        outlineWeight = 2;
-      }
-
-      return {
-        fillColor: sentiment ? sentiments[sentiment].background : "#fff",
-        fillOpacity: sentiment ? "1" : "0",
-        strokeColor: "#fff",
-        strokeWeight: outlineWeight,
-      };
-    });
-
-    map.data.addListener("mouseover", (e) => {
-      e.feature.setProperty("state", "hover");
-    });
-
-    map.data.addListener("mouseout", (e) => {
-      e.feature.setProperty("state", "normal");
-    });
-
-    map.data.loadGeoJson("/countries_detailed.geo.json", {
-      idPropertyName: "ISO_A3",
-    });
-
-    window.google.maps.event.addListenerOnce(map.data, "addfeature", () => {
-      loadSentimentData();
-    });
-  };
-
-  const loadSentimentData = (option) => {
-    fetch(`${process.env.REACT_APP_API_URL}/countries/tweets`)
-      .then((res) => res.json())
-      .then((data) => {
-        data.forEach((row) => {
-          const feature = map.data.getFeatureById(row.countryCode);
-          if (feature) {
-            feature.setProperty("sentiment", row.mainSentiment);
-          }
-        });
-      });
-  };
-
-  function clearSentimentData() {
-    map.data.forEach((row) => {
-      row.setProperty("sentiment", undefined);
-    });
-  }
-
-  const handleChange = (e) => {
-    clearSentimentData();
-    loadSentimentData(e.target.value);
-  };
-
-  useInterval(() => {
-    loadSentimentData();
-  }, 60 * 1000);
+    setFilters((prevState) => ({
+      ...prevState,
+      createdAt,
+    }));
+  }, [dateRange]);
 
   const options = useTerms();
 
   return (
     <React.Fragment>
       <div>
-        <select onChange={handleChange}>
+        <select onChange={handleTermChange}>
           <option value="">All</option>
           {options.map((option) => (
             <option key={option.value} value={option.value}>
@@ -123,11 +46,8 @@ const Map = () => {
             </option>
           ))}
         </select>
-        <input
-          type="date"
-          onChange={() => {}}
-          value={moment().format("YYYY-MM-DD")}
-        />
+        <Datetime onChange={handleDateChange("from")} timeFormat={false} />
+        <Datetime onChange={handleDateChange("to")} timeFormat={false} />
       </div>
       <div className="flex">
         {Object.keys(sentiments).map((key) => (
@@ -140,7 +60,7 @@ const Map = () => {
           </div>
         ))}
       </div>
-      <div style={{ height: "90vh" }} id="map-container"></div>
+      <GoogleMaps filters={filters} />
     </React.Fragment>
   );
 };

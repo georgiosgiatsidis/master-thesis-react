@@ -8,6 +8,7 @@ import {
 import Layout from "./components/Layout";
 import Feed from "./pages/Feed";
 import Map from "./pages/Map";
+import "react-datetime/css/react-datetime.css";
 import "./tailwind.output.css";
 
 function App() {
