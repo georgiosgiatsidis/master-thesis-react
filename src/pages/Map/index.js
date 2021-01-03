@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import moment from "moment";
 import DatePicker from "../../components/DatePicker";
 import GoogleMaps from "../../components/GoogleMaps";
 import useTerms from "../../hooks/useTerms";

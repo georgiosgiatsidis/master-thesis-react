@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import queryString from "query-string";
 import useInterval from "../../hooks/useInterval";
 import { sentiments } from "../../helpers/utils";
@@ -6,6 +6,29 @@ import { sentiments } from "../../helpers/utils";
 let map;
 
 const GoogleMaps = ({ filters }) => {
+  const loadSentimentData = useCallback(() => {
+    if (map) {
+      let stringifiedFilters = queryString.stringify(filters);
+
+      if (stringifiedFilters) {
+        stringifiedFilters = `?${stringifiedFilters}`;
+      }
+
+      fetch(
+        `${process.env.REACT_APP_API_URL}/countries/tweets${stringifiedFilters}`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          data.forEach((row) => {
+            const feature = map.data.getFeatureById(row.countryCode);
+            if (feature) {
+              feature.setProperty("sentiment", row.mainSentiment);
+            }
+          });
+        });
+    }
+  }, [filters]);
+
   useEffect(() => {
     if (!window.google) {
       const script = document.createElement(`script`);
@@ -24,7 +47,7 @@ const GoogleMaps = ({ filters }) => {
   useEffect(() => {
     clearSentimentData();
     loadSentimentData();
-  }, [filters]);
+  }, [filters, loadSentimentData]);
 
   useInterval(() => {
     loadSentimentData();
@@ -82,36 +105,16 @@ const GoogleMaps = ({ filters }) => {
       e.feature.setProperty("state", "normal");
     });
 
-    map.data.loadGeoJson("/countries_detailed.geo.json", {
-      idPropertyName: "ISO_A3",
-    });
+    map.data.loadGeoJson(
+      "/countries.geo.json"
+      // {
+      // idPropertyName: "ISO_A3",
+      //}
+    );
 
     window.google.maps.event.addListenerOnce(map.data, "addfeature", () => {
       loadSentimentData();
     });
-  };
-
-  const loadSentimentData = () => {
-    if (map) {
-      let stringifiedFilters = queryString.stringify(filters);
-
-      if (stringifiedFilters) {
-        stringifiedFilters = `?${stringifiedFilters}`;
-      }
-
-      fetch(
-        `${process.env.REACT_APP_API_URL}/countries/tweets${stringifiedFilters}`
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          data.forEach((row) => {
-            const feature = map.data.getFeatureById(row.countryCode);
-            if (feature) {
-              feature.setProperty("sentiment", row.mainSentiment);
-            }
-          });
-        });
-    }
   };
 
   const clearSentimentData = () => {
