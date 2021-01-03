@@ -36,18 +36,26 @@ const Map = () => {
   return (
     <React.Fragment>
       <div className="flex m-4">
-        <select className="px-3 py-3 text-gray-700 rounded shadow outline-none" onChange={handleTermChange}>
-          <option value="">All</option>
-          {options.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
+        <div>
+          <span className="text-white">Term</span>
+          <select
+            className="w-full px-3 py-3 text-gray-700 rounded shadow outline-none"
+            onChange={handleTermChange}
+          >
+            <option value="">All</option>
+            {options.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="ml-3">
+          <span className="text-white">From</span>
           <DatePicker onChange={handleDateChange("from")} />
         </div>
         <div className="ml-3">
+          <span className="text-white">To</span>
           <DatePicker onChange={handleDateChange("to")} />
         </div>
       </div>
