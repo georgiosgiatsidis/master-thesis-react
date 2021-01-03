@@ -1,3 +1,4 @@
+import moment from "moment";
 import { sentiments } from "../../helpers/utils";
 
 const Tweet = ({ tweet }) => {
@@ -23,7 +24,7 @@ const Tweet = ({ tweet }) => {
                 {tweet && tweet.user && tweet.user.screenName
                   ? tweet.user.screenName
                   : "-"}{" "}
-                &bull; {tweet.createdAt}
+                &bull; {moment(tweet.createdAt).format("DD/MM/YYYY HH:mm")}
               </span>
             </p>
           </div>
