@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import moment from "moment";
 import DatePicker from "../../components/DatePicker";
 import GoogleMaps from "../../components/GoogleMaps";
 import useTerms from "../../hooks/useTerms";
@@ -21,8 +22,14 @@ const Map = () => {
 
     if (dateRange.from && dateRange.to) {
       const from = dateRange.from.toISOString();
-      const to = dateRange.to.toISOString();
+      const to = dateRange.to.endOf("day").toISOString();
       createdAt = `between:${from},${to}`;
+    } else if (dateRange.from) {
+      const from = dateRange.from.toISOString();
+      createdAt = `gte:${from}`;
+    } else if (dateRange.to) {
+      const to = dateRange.to.endOf("day").toISOString();
+      createdAt = `lte:${to}`;
     }
 
     setFilters((prevState) => ({
