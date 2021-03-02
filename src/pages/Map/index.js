@@ -50,8 +50,8 @@ const Map = () => {
           >
             <option value="">All</option>
             {options.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
+              <option key={option.name} value={option.name}>
+                {option.name}
               </option>
             ))}
           </select>

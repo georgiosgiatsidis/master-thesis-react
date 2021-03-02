@@ -22,6 +22,12 @@ class SocketClient {
         }
       });
 
+      this.socket.on("topHashtags", (data) => {
+        if (this.options.onTopHashtags) {
+          this.options.onTopHashtags(data);
+        }
+      });
+
       this.socket.on("connect", () => {
         if (this.options.onConnect) {
           this.options.onConnect();
